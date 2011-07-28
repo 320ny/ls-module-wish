@@ -1,0 +1,49 @@
+<? 
+$old_view_path = $this->view_path; 
+$this->view_path = Wishlist_Module::PATH . '/partials/'; 
+?>
+<li>
+	<div id="wishlist_list" class="clear">
+		<? $lists = $form_model->list_related_records_deferred('wishlist_lists', $this->formGetEditSessionKey()); ?>
+
+		<table class="simpleList">
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th class="number">Items</th>
+					<th class="date last">Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				<? if($lists->count): ?>
+					<?
+					$session_key = $this->formGetEditSessionKey();
+					
+					foreach($lists as $list):
+						$quantity = 0;
+						
+						foreach($list->items as $item)
+							$quantity += $item->quantity;
+					?>
+					<tr class="<?= Backend_Html::zebra('wishlist_lists') ?>">
+						<td>
+							<?= h($list->title) ?>
+						</td>
+						<td class="number"><?= $quantity ?></td>
+						<td class="date last"><?= $list->displayField('created_at') ?></td>
+					</tr>
+					<?
+						endforeach;
+					?>
+				<? else: ?>
+					<tr class="noData">
+						<td colspan="3" class="last">There are no lists</td>
+					</tr>
+				<? endif ?>
+			</tbody>
+		</table>
+	</div>
+</li>
+<?
+$this->view_path = $old_view_path;
+?>

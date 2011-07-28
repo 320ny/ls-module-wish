@@ -1,0 +1,72 @@
+<?
+$items = $form_model->list_related_records_deferred('items', $this->formGetEditSessionKey());
+
+$new_sort_order = post('new_sort_order', -1);
+$form_model->sort_order = !$form_model->sort_order ? $new_sort_order : $form_model->sort_order;
+
+usort($items->objectArray, array('Wishlist_List', 'sort'));
+?>
+
+<table class="simpleList">
+	<thead>
+		<tr>
+		<? if($items->count): ?>
+			<th class="iconCell">&nbsp;</th>
+		<? endif ?>
+			<th>Title</th>
+			<th>Quantity</th>
+			<th>Extras</th>
+			<th>Options</th>
+		<? if($items->count): ?>
+			<th class="iconCell last">&nbsp;</th>
+		<? endif ?>
+		</tr>
+	</thead>
+
+	<tbody id="list_body">
+		<? if(!$items->count): ?>
+			<tr class="noData">
+				<td colspan="6" class="last">There are no items.</td>
+			</tr>
+		<? else: ?>
+			<? foreach($items as $item): 
+				$session_key = $this->formGetEditSessionKey();
+				$onClick = "$('wishlist_list_item_id').value = '{$item->id}'; new PopupForm('onLoadItemsForm', {closeByEsc: false, ajaxFields: $('items').getForm()}); return false;";
+				$row_onclick = 'onclick="' . $onClick . '"';
+				$row_link_class = "link";
+				$extras = unserialize(base64_decode($item->extras));
+				$options = unserialize(base64_decode($item->options));
+			?>
+				<tr class="<?= Backend_Html::zebra('items') ?>">
+					<td class="iconCell">
+						<a href="#" class="row_drag_handle sort_handle" onclick="return false" title="Reorder items">Reorder options</a>
+						<input class="id" value="<?= $item->id ? $item->id : -1 ?>" type="hidden" />
+						<input id="sort_order<?= $session_key ?>" class="order" value="<?= $item->sort_order ? $item->sort_order : -1 ?>" type="hidden" />
+					</td>
+					<td class="<?= $row_link_class ?>" <?= $row_onclick ?>>
+						<a href="#" onclick="<?= $onClick ?>">
+							<span><?= h($item->displayField('title', 'list')) ?></span>
+						</a>
+					</td>
+					<td class="<?= $row_link_class ?>" <?= $row_onclick ?>>
+						<a href="#" onclick="<?= $onClick ?>">
+							<span><?= h($item->displayField('quantity', 'list')) ?></span>
+						</a>
+					</td>
+					<td class="<?= $row_link_class ?>" <?= $row_onclick ?>>
+						<a href="#" onclick="<?= $onClick ?>">
+							<span><?= $extras ? implode(';', $extras) : 'None' ?></span>
+						</a>
+					</td>
+					<td class="<?= $row_link_class ?>" <?= $row_onclick ?>>
+						<a href="#" onclick="<?= $onClick ?>">
+							<span><?= $options ? implode(';', $options) : 'None' ?></span>
+						</a>
+					</td>
+					<td class="iconCell last"><a onclick="$('wishlist_list_item_id').value = '<?= $item->id ?>'; return $(this).getForm().sendPhpr('onRemoveItem', {update: 'items', loadIndicator: {show: false}});" title="Remove Item" class="deleteDocument" href="#">Remove from the list</a></td>
+					</td>
+				</tr>
+			<? endforeach ?>
+		<? endif ?>
+	</tbody>
+</table>

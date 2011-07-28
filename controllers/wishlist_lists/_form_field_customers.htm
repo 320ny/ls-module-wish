@@ -1,0 +1,41 @@
+<li>
+	<input id="shop_customer_id" name="shop_customer_id" type="hidden" value="" />
+	
+	<div id="customers" class="clear">
+		<? $this->renderPartial('customers') ?>
+	</div>
+
+	<p id="load_add_customers_form" class="addDocument img_noBottomPading"><a href="#">Add customer(s)</a></p>
+	
+	<script type="text/javascript">
+	var MooTools = $;
+	
+	jQuery(function($) {
+		$('#load_add_customers_form').click(function() {
+			var fields = $(MooTools(this).getForm()).serializeObject();
+			fields['add_customers_mode'] = 1;
+		
+			new PopupForm('onLoadAddCustomersForm', {
+				ajaxFields: fields
+			});
+			
+			return false;
+		});
+	});
+	
+	function updateCustomers() {
+		cancelPopup();
+	
+		$('customers').getForm().sendPhpr('onUpdateCustomers', {
+				update: 'customers',
+				loadIndicator: {
+					show: true,
+					element: 'customers',
+					hideOnSuccess: true,
+					src: 'phproad/resources/images/form_load_30x30.gif'
+				}
+			}
+		)
+	}
+	</script>
+</li>

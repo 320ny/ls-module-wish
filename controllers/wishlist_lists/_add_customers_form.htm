@@ -1,0 +1,33 @@
+<div>
+	<h2>Add Customers</h2>
+	<div class="content">
+		<div class="form700">
+			<? if(!isset($fatalError)): ?>
+				<?= Phpr_Form::open_tag(array('id' => $this->listGetFormId())) ?>
+					<input type="hidden" name="edit_session_key" value="<?= h($edit_session_key) ?>" />
+					<input type="hidden" name="add_customers_mode" value="1" />
+				
+					<p class="list_select_controls">Select on this page: <a href="#" onclick="return select('list<?= $this->list_name ?>_body', event, 'all')">all</a>, <a href="#"  onclick="return select('list<?= $this->list_name ?>_body', event, 'none')">none</a></p>
+
+					<div class="formFlash"></div>
+
+					<div class="embeddedList search700">
+						<?= $this->listRender() ?>
+					</div>
+
+					<?= backend_ajax_button('Add', 'onAddCustomers', array(), "
+						loadIndicator: {injectInElement: true},
+						onSuccess: updateCustomers
+					") ?>
+					<?= backend_button('Cancel', array('onclick' => 'return cancelPopup()')) ?>
+			
+					<div class="clear"></div>
+				<?= Phpr_Form::close_tag() ?>
+			<? else: ?>
+				<?= flash() ?>
+				<?= backend_button('Cancel', array('onclick' => 'return cancelPopup()')) ?>
+				<div class="clear"></div>
+			<? endif ?>
+		</div>
+	</div>
+</div>

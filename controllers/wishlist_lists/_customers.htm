@@ -1,0 +1,28 @@
+<? $customers = $form_model->list_related_records_deferred('customers', $this->formGetEditSessionKey()) ?>
+<table class="simpleList">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<? if($customers->count): ?>
+				<th class="iconCell last">&nbsp;</th>
+			<? endif ?>
+		</tr>
+	</thead>
+
+	<tbody>
+		<? if(!$customers->count): ?>
+			<tr class="noData">
+				<td colspan="1" class="last">There are no customers.</td>
+			</tr>
+		<? else: ?>
+			<? foreach($customers as $customer): 
+				$url = url("/shop/customers/edit/" . $customer->id . '/?' . uniqid());
+			?>
+				<tr class="<?= Backend_Html::zebra('grouped') ?>">
+					<td class="link"><a target="_blank" href="<?= $url ?>"><?= h($customer->displayField('first_name', 'list')) ?> <?= h($customer->displayField('last_name', 'list')) ?></a></td>
+					<td class="iconCell last"><a onclick="$('shop_customer_id').value = '<?= $customer->id ?>'; return $(this).getForm().sendPhpr('onRemoveCustomer', {update: 'customers', loadIndicator: {show: false}});" title="Remove customer" class="deleteDocument" href="#">Remove from the list</a></td>
+				</tr>
+			<? endforeach ?>
+		<? endif ?>
+	</tbody>
+</table>

@@ -1,0 +1,47 @@
+<li>
+	<input id="wishlist_list_item_id" name="wishlist_list_item_id" type="hidden" value="" />
+	
+	<? if($this->isHintVisible('items')): ?>
+		<div class="hint">
+		    <p class="last">You can manage the order of the items in the front-end drop-down list, by dragging the arrow icons up and down.</p>
+			<a title="Hide this hint" href="#" class="close" onclick="return hide_tip('items', this)">Close</a>
+	    </div>
+	<? endif ?>
+	
+	<div id="items" class="clear">
+		<? $this->renderPartial('items') ?>
+	</div>
+	<p id="load_add_items_form" class="addDocument img_noBottomPading"><a href="#">Add item(s)</a></p>
+	
+	<script type="text/javascript">
+	var MooTools = $;
+	
+	jQuery(function($) {
+		$('#load_add_items_form').click(function() {
+			var fields = $(MooTools(this).getForm()).serializeObject();
+			fields['add_items_mode'] = 1;
+		
+			new PopupForm('onLoadAddItemsForm', {
+				ajaxFields: fields
+			});
+			
+			return false;
+		});
+	});
+		
+	function updateItems() {
+		cancelPopup();
+	
+		$('items').getForm().sendPhpr('onUpdateItems', {
+				update: 'items',
+				loadIndicator: {
+					show: true,
+					element: 'items',
+					hideOnSuccess: true,
+					src: 'phproad/resources/images/form_load_30x30.gif'
+				}
+			}
+		)
+	}
+	</script>
+</li>
