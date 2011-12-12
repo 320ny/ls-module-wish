@@ -2,7 +2,7 @@
 Provides wish lists for your customers.
 
 ## Installation
-1. Download Wish
+1. Download [Wish](https://github.com/limewheel/ls-module-wish/zipball/master).
 1. Create a folder named `wish` in the `modules` directory.
 1. Extract all files into the `modules/wish` directory (`modules/wish/readme.md` should exist).
 1. Done!

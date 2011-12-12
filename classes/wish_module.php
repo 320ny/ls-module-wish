@@ -8,7 +8,7 @@
 		protected function create_module_info() {
 			return new Core_ModuleInfo(
 				"Wish",
-				"Provides wish lists for your customers.",
+				"Provides wish lists for your store customers.",
 				"Limewheel Creative Inc."
 			);
 		}
