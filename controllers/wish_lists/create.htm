@@ -1,12 +1,17 @@
+<? Phpr_View::beginBlock("head") ?>
+	<script type="text/javascript" src="modules/<?= $this->strings['module_name'] ?>/resources/js/select.js"></script>
+	<script type="text/javascript" src="modules/<?= $this->strings['module_name'] ?>/resources/js/jquery.serializeobject.js"></script>
+<? Phpr_View::endBlock() ?>
+
 <? Phpr_View::beginBlock("view") ?>
 	<ul class="breadcrumbs">
-		<li><a href="<?= url($this->url) ?>"><?= $this->title ?></a></li>
+		<li><a href="<?= url($this->strings['controller_url']) ?>"><?= $this->strings['controller_title'] ?></a></li>
 		<li><?= $this->app_page_title ?></li>
 	</ul>
 	
 	<?= flash() ?>
 
-	<? if (!isset($fatalError)): ?>
+	<? if(!isset($fatalError)): ?>
 		<div class="form600">
 			<?= Phpr_Form::openTag(array('id' => 'form_element')) ?>
 				<? $this->formRender() ?>
@@ -19,6 +24,6 @@
 			</form>
 		</div>
 	<? else: ?>
-		<p><a href="<?= url($this->url) ?>">Return to the <?= $this->name ?> list</a></p>
+		<p><a href="<?= url($this->strings['controller_url']) ?>">Return to the <?= $this->strings['controller_name'] ?> list</a></p>
 	<? endif ?>
 <? Phpr_View::endBlock() ?>

@@ -1,10 +1,10 @@
 <? 
 $old_view_path = $this->view_path; 
-$this->view_path = Wishlist_Module::PATH . '/partials/'; 
+$this->view_path = Wish_Module::PATH . '/partials/'; 
 ?>
 <li>
-	<div id="wishlist_list" class="clear">
-		<? $lists = $form_model->list_related_records_deferred('wishlist_lists', $this->formGetEditSessionKey()); ?>
+	<div id="wish_lists" class="clear">
+		<? $lists = $form_model->list_related_records_deferred('wish_lists', $this->formGetEditSessionKey()); ?>
 
 		<table class="simpleList">
 			<thead>
@@ -25,7 +25,7 @@ $this->view_path = Wishlist_Module::PATH . '/partials/';
 						foreach($list->items as $item)
 							$quantity += $item->quantity;
 					?>
-					<tr class="<?= Backend_Html::zebra('wishlist_lists') ?>">
+					<tr class="<?= Backend_Html::zebra('wish_lists') ?>">
 						<td>
 							<?= h($list->title) ?>
 						</td>

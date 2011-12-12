@@ -1,0 +1,6 @@
+<div class="toolbar">
+	<?= backend_ctr_button("Add a {$this->strings['model_name']}", 'new_document', url("{$this->strings['controller_url']}/create")) ?>
+	<div class="separator">&nbsp;</div>
+	<?= backend_ctr_button("Manage {$this->strings['model_name']} order", 'manage_order', url("{$this->strings['controller_url']}/reorder")) ?>
+	<div class="clear"></div>
+</div>

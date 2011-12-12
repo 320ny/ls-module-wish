@@ -1,7 +1,7 @@
 <?
 
-	class Wishlist_List_Item extends Db_ActiveRecord {
-		public $table_name = 'wishlist_list_items';
+	class Wish_List_Item extends Db_ActiveRecord {
+		public $table_name = 'wish_list_items';
 		public $name = 'list item';
 		public $title = 'List Item';
 		

@@ -1,15 +1,28 @@
 <?
 
-	class Wishlist_Lists extends Backend_Controller {
-		public $implement = 'Db_ListBehavior, Db_FormBehavior, Db_FilterBehavior';
-		public $list_model_class = 'Wishlist_List';
-		public $list_record_url = null;
-		public $list_name;
+	class Wish_Lists extends Backend_Controller {
+		public $strings = array(
+			'model_title' => 'List',
+			'model_name' => 'list',
+			'model_code' => 'wish_list',
+			'model_class' => 'Wish_List',
+			'controller_table_name' => 'wish_lists',
+			'controller_name' => 'lists',
+			'controller_title' => 'Lists',
+			'controller_url' => '/wish/lists',
+			'controller_code' => 'wish_lists',
+			'controller_class' => 'Wish_Lists',
+			'module_name' => 'wish',
+			'module_title' => 'Wish',
+			'module_path' => '/modules/wish'
+		);
 		
-		public $form_preview_title = 'Wishlist Lists';
+		public $implement = 'Db_ListBehavior, Db_FormBehavior, Db_FilterBehavior';
+		
+		public $form_preview_title = 'Wish Lists';
 		public $form_create_title = 'New List';
 		public $form_edit_title = 'Edit List';
-		public $form_model_class = 'Wishlist_List';
+		public $form_model_class = 'Wish_List';
 		public $form_not_found_message = 'Record not found';
 		public $form_redirect = null;
 		
@@ -17,7 +30,10 @@
 		public $form_create_save_flash = 'The record has been successfully added';
 		public $form_edit_delete_flash = 'The record has been successfully deleted';
 		public $form_edit_save_auto_timestamp = true;
-		
+
+		public $list_model_class = 'Wish_List';
+		public $list_record_url = null;
+		public $list_name;
 		public $list_search_enabled = true;
 		public $list_search_fields = array('@title');
 		public $list_search_prompt = 'find lists by title';
@@ -27,17 +43,10 @@
 		public $list_columns = array();
 		public $list_custom_body_cells = null;
 		public $list_custom_head_cells = null;
+		public $list_no_form = false;
+		public $list_render_filters = false;
 		
-		public $url = '/wishlist/lists';
-		public $title = 'Lists';
-		public $name = 'lists';
-		public $model_name = 'list';
-		public $model_title = 'List';
-		public $module_path = '/modules/wishlist';
-		public $module_name = 'wishlist';
-		public $module_title = 'Wishlist';
-		
-		protected $required_permissions = array('wishlist:lists');
+		protected $required_permissions = array('wish:manage_lists');
 		
 		protected $globalHandlers = array(
 			'onLoadAddCustomersForm',
@@ -53,27 +62,27 @@
 		public function __construct() {
 			parent::__construct();
 			
-			$this->app_tab = 'wishlist';
-			$this->app_module_name = 'Wishlist';
+			$this->app_tab = 'wish';
+			$this->app_module_name = 'Wish';
 
-			$this->list_record_url = url('/wishlist/lists/edit/');
+			$this->list_record_url = url('/wish/lists/edit/');
 			$this->list_columns = array('title', 'slug', 'items_count', 'is_enabled');
-			$this->form_redirect = url('/wishlist/lists/');
-			$this->app_page = 'wishlist_lists';
+			$this->form_redirect = url('/wish/lists/');
+			$this->app_page = 'wish_lists';
 
 			if(Phpr::$router->action == 'reorder') {
 				$this->list_record_url = null;
 				$this->list_search_enabled = false;
 				$this->list_no_interaction = true;
-				$this->list_custom_body_cells = PATH_APP . '/modules/wishlist/controllers/wishlist_lists/_body_cells.htm';
-				$this->list_custom_head_cells = PATH_APP . '/modules/wishlist/controllers/wishlist_lists/_head_cells.htm';
+				$this->list_custom_body_cells = PATH_APP . '/modules/wish/controllers/wish_lists/_body_cells.htm';
+				$this->list_custom_head_cells = PATH_APP . '/modules/wish/controllers/wish_lists/_head_cells.htm';
 			}
 			else if(post('add_items_mode')) {
 				$this->list_record_url = '#';
-				$this->list_name = 'Wishlist_List_Items_' . Phpr::$router->action . '_list';
+				$this->list_name = 'Wish_List_Items_' . Phpr::$router->action . '_list';
 				$this->list_data_context = 'items';
-				$this->list_model_class = 'Wishlist_List_Item';
-				$this->list_search_fields = array('product_calculated_join.name');
+				$this->list_model_class = 'Wish_List_Item';
+				$this->list_search_fields = array('item_calculated_join.title');
 				$this->list_search_prompt = 'find items by title';
 				$this->list_top_partial = false;
 				$this->list_columns = array('title');
@@ -116,7 +125,7 @@
 		
 		public function listPrepareData() {
 			if(post('add_items_mode')) {
-				$item = new Wishlist_List_item();
+				$item = new Wish_List_item();
 				$this->filterApplyToModel($item, 'items');
 				
 				return $item;
@@ -128,7 +137,7 @@
 				return $customer;
 			}
 			
-			$list = new Wishlist_List();
+			$list = new Wish_List();
 			
 			return $list;
 		}
@@ -145,52 +154,26 @@
 		
 		protected function reorder_onSetOrders() {
 			try {
-				SiteManagement_Site::set_orders(post('item_ids'), post('sort_orders'));
+				SiteManagement_Site::set_orders(post('list_ids'), post('sort_orders'));
 			}
 			catch(Exception $ex) {
 				Phpr::$response->ajaxReportException($ex, true, true);
 			}
 		}
 		
-		public function formCreateProductModelObject() {
-			$context = $this->formGetUniquePrefix();
-			
-			if ($context == 'csv_import')
-				return $this->csvImportGetModelObj();
-			
-			if ($context == 'csv_grid_import') {
-				$obj = new Shop_Product();
-				$obj->define_form_fields();
-				return $obj;
+		public function get_list($id = null) {
+			if($id) {
+				$list = Wish_List::create()->find($id);
 			}
+			else {
+				$context = $this->formGetUniquePrefix();
 
-			if ($context != 'grouped') {
-				$obj = Shop_Product::create();
-				$obj->init_columns_info();
-				$obj->define_form_fields($context);
-				$obj->tax_class_id = Shop_TaxClass::get_default_class_id();
+				$list = Wish_List::create();
+				$list->init_columns_info();
+				$list->define_form_fields($context);
 			}
-			else
-				$obj = $this->initGroupedProduct(null);
-
-			return $obj;
-		}
-
-		public function formFindProductModelObject($id, $copy_relations = false) {
-			$context = $this->formGetUniquePrefix();
-
-			if($context != 'grouped') {
-				$obj = Shop_Product::create()->find($id);
-				if ($obj)
-					$obj->define_form_fields($context);
-			}
-			else
-			 	$obj = $this->initGroupedProduct($id, $copy_relations);
 			
-			if (!$obj)
-				throw new Phpr_ApplicationException($this->form_not_found_message);
-
-			return $obj;
+			return $list;
 		}
 		
 		/* 
@@ -198,15 +181,14 @@
 		 */
 		
 		protected function onCustomEvent($id = null) {
-			$product = null;
+			$list = null;
 			
 			if(Phpr::$router->action === 'edit' || Phpr::$router->action === 'create')
-				$customer = $this->get_customer($id);
+				$list = $this->get_list($id);
 
-			Backend::$events->fireEvent(post('custom_event_handler'), $this, $customer);
+			Backend::$events->fireEvent(post('custom_event_handler'), $this, $list);
 		}
 		
-
 		/**
 		 * Customers
 		 */
@@ -228,15 +210,13 @@
 				if(!count($ids))
 					throw new Phpr_ApplicationException('Please select customer(s) to add.');
 
-				$list = Wishlist_List::create()->find($parent_id);
+				$list = $this->get_list($parent_id);
+
 				$customers = Shop_Customer::create()->where('id in (?)', array($ids))->find_all();
 
 				foreach($customers as $customer) { 
 					$list->customers->add($customer, post('edit_session_key'));
 				}
-				
-				$list->save(null, post('edit_session_key'));
-				$list = Wishlist_List::create()->find($parent_id);
 			}
 			catch(Exception $ex) {
 				Phpr::$response->ajaxReportException($ex, true, true);
@@ -245,7 +225,10 @@
 		
 		protected function onUpdateCustomers($parent_id = null) {
 			try {
-				$this->viewData['form_model'] = Wishlist_List::create()->find($parent_id);
+				$list = $this->get_list($parent_id);
+				
+				$this->viewData['form_model'] = $list;
+				
 				$this->renderPartial('customers');
 			}
 			catch(Exception $ex) {
@@ -255,7 +238,7 @@
 		
 		protected function onRemoveCustomer($parent_id = null) {
 			try {
-				$list = Wishlist_List::create()->find($parent_id);
+				$list = $this->get_list($parent_id);
 
 				$id = post('shop_customer_id');
 				$customer = Shop_Customer::create()->find($id);
@@ -292,15 +275,13 @@
 				if(!count($ids))
 					throw new Phpr_ApplicationException('Please select item(s) to add.');
 
-				$list = Wishlist_List::create()->find($parent_id);
-				$items = Wishlist_List_Item::create()->where('id in (?)', array($ids))->find_all();
+				$list = $this->get_list($parent_id);
+				
+				$items = Wish_List_Item::create()->where('id in (?)', array($ids))->find_all();
 
 				foreach($items as $item) { 
 					$list->items->add($item, post('edit_session_key'));
 				}
-				
-				$list->save(null, post('edit_session_key'));
-				$list = Wishlist_List::create()->find($parent_id);
 			}
 			catch(Exception $ex) {
 				Phpr::$response->ajaxReportException($ex, true, true);
@@ -309,7 +290,7 @@
 		
 		protected function onUpdateItems($parent_id = null) {
 			try {
-				$this->viewData['form_model'] = Wishlist_List::create()->find($parent_id);
+				$this->viewData['form_model'] = Wish_List::create()->find($parent_id);
 				$this->renderPartial('items');
 			}
 			catch(Exception $ex) {
@@ -319,10 +300,10 @@
 		
 		protected function onRemoveItem($parent_id = null) {
 			try {
-				$list = Wishlist_List::create()->find($parent_id);
+				$list = $this->get_list($parent_id);
 
-				$id = post('wishlist_list_item_id');
-				$item = Wishlist_List_Item::create()->find($id);
+				$id = post('wish_list_item_id');
+				$item = Wish_List_Item::create()->find($id);
 				
 				if($item)
 					$list->items->delete($item, $this->formGetEditSessionKey());

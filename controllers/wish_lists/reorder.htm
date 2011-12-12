@@ -1,29 +1,29 @@
 <? Phpr_View::beginBlock("head") ?>
-	<script type="text/javascript" src="<?= root_url("{$this->module_path}/resources/js/reorder.js") ?>"></script>
+	<script type="text/javascript" src="<?= root_url("{$this->strings['module_path']}/resources/js/reorder.js") ?>"></script>
 	<script type="text/javascript">
-		reorder("Wishlist_List_Items");
+		reorder("<?= $this->strings['controller_class'] ?>");
 	</script>
 <? Phpr_View::endBlock() ?>
 
 <? Phpr_View::beginBlock("view") ?>
 	<ul class="breadcrumbs">
-		<li><a href="<?= url($this->url) ?>"><?= $this->title ?></a></li>
+		<li><a href="<?= url($this->url) ?>"><?= $this->strings['controller_title'] ?></a></li>
 		<li><?= $this->app_page_title ?></li>
 	</ul>
 
 	<?= flash() ?>
 	
-	<? if ($this->isHintVisible('sort_order')): ?>
+	<? if($this->isHintVisible('sort_order')): ?>
 		<?= Phpr_Form::openTag(array('id' => 'hint_form')) ?>
 			<div class="hint">
-				<p class="last">Manage <?= $this->name ?> order by dragging the arrow icons in the list below.</p>
+				<p class="last">Manage <?= $this->strings['model_name'] ?> order by dragging the arrow icons in the list below.</p>
 				<a title="Hide this hint" href="#" class="close" onclick="return hide_tip('sort_order', this)">Close</a>
 			</div>
 		</form>
 	<? endif ?>
 
 	<div class="toolbar">
-		<?= backend_ctr_button("Return to the {$this->name} list", 'go_back', url($this->url)) ?>
+		<?= backend_ctr_button("Return to the {$this->strings['controller_name']} list", 'go_back', url($this->strings['controller_url'])) ?>
 		<div class="clear"></div>
 	</div>
 

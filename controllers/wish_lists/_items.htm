@@ -4,7 +4,7 @@ $items = $form_model->list_related_records_deferred('items', $this->formGetEditS
 $new_sort_order = post('new_sort_order', -1);
 $form_model->sort_order = !$form_model->sort_order ? $new_sort_order : $form_model->sort_order;
 
-usort($items->objectArray, array('Wishlist_List', 'sort'));
+usort($items->objectArray, array('Wish_List', 'sort'));
 ?>
 
 <table class="simpleList">
@@ -31,7 +31,7 @@ usort($items->objectArray, array('Wishlist_List', 'sort'));
 		<? else: ?>
 			<? foreach($items as $item): 
 				$session_key = $this->formGetEditSessionKey();
-				$onClick = "$('wishlist_list_item_id').value = '{$item->id}'; new PopupForm('onLoadItemsForm', {closeByEsc: false, ajaxFields: $('items').getForm()}); return false;";
+				$onClick = "$('wish_list_item_id').value = '{$item->id}'; new PopupForm('onLoadItemsForm', {closeByEsc: false, ajaxFields: $('items').getForm()}); return false;";
 				$row_onclick = 'onclick="' . $onClick . '"';
 				$row_link_class = "link";
 				$extras = unserialize(base64_decode($item->extras));
@@ -63,7 +63,7 @@ usort($items->objectArray, array('Wishlist_List', 'sort'));
 							<span><?= $options ? implode(';', $options) : 'None' ?></span>
 						</a>
 					</td>
-					<td class="iconCell last"><a onclick="$('wishlist_list_item_id').value = '<?= $item->id ?>'; return $(this).getForm().sendPhpr('onRemoveItem', {update: 'items', loadIndicator: {show: false}});" title="Remove Item" class="deleteDocument" href="#">Remove from the list</a></td>
+					<td class="iconCell last"><a onclick="$('wish_list_item_id').value = '<?= $item->id ?>'; return $(this).getForm().sendPhpr('onRemoveItem', {update: 'items', loadIndicator: {show: false}});" title="Remove Item" class="deleteDocument" href="#">Remove from the list</a></td>
 					</td>
 				</tr>
 			<? endforeach ?>
