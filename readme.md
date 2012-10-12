@@ -19,7 +19,7 @@ Add code to your product page:
 Create a partial named `shop:product:wish_list` with this code:
 
 ```php
-<? if($this->customer && count($this->customer->wishlists)): ?>
+<? if($this->customer && count($this->customer->wish_lists)): ?>
   <? $wish_list = $this->customer->wish_lists[0] ?>
   <? if($wish_list->product_exists($product)): ?>
   <?= open_form(array('class' => 'wish-list', 'onsubmit' => "return $(this).sendRequest('wish:on_removeFromList', {
