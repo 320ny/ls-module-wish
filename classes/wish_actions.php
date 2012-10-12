@@ -18,7 +18,7 @@
 			}
 			
 			if($list_id = post('wish_list_id')) {
-				$list = Wishlist_List::create()->find($list_id);
+				$list = Wish_List::create()->find($list_id);
 				
 				if(!$list)
 					throw new Cms_Exception('List not found.');
@@ -85,7 +85,7 @@
 					throw new Cms_Exception('Product not found.');
 			}
 			
-			$items = Wishlist_List_Item::create()->where('shop_product_id=:product_id', array(
+			$items = Wish_List_Item::create()->where('shop_product_id=:product_id', array(
 				'product_id' => $product->id
 			))->find_all();
 			
@@ -108,7 +108,7 @@
 			$title = $_POST['title']; 
 			$slug = Phpr_Inflector::slugify($title);
 			
-			if(Wishlist_List::create()->find_by_slug($slug)) {
+			if(Wish_List::create()->find_by_slug($slug)) {
 				throw new Phpr_ApplicationException('Chosen title is taken.');
 			}
 
